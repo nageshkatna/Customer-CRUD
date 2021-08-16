@@ -14,6 +14,8 @@ interface Props {
   data: Values[];
   handleChange: (e:React.ChangeEvent<HTMLInputElement>)=> void;
   handleSubmit: () => void;
+  handleChangeAddress: (e:React.ChangeEvent<HTMLInputElement>)=> void;
+  handleDropDown: (e:any, data: any) => void;
   setf: (fetch: Values[]) => void;
 }
 const options = [
@@ -32,12 +34,11 @@ const options = [
   { key: 'NU', text: 'Nunavut', value: 'NU' }
 ]
 
-const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf}) => {
-  console.log("data", data)
+const CustomerForm: React.FC<Props> = ({data, handleChange, handleChangeAddress, handleSubmit, handleDropDown}) => {
   return(
     <Segment>
-      {data.map((ele) => 
-        <Form onSubmit={handleSubmit}>
+      {data.map((ele , index) => 
+        <Form onSubmit={handleSubmit} key={index}>
           <Form.Group widths='equal'>
             <Form.Field
               control={Input}
@@ -45,10 +46,7 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
               label='Full name'
               defaultValue = {ele.Name}
               placeholder='Full name'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Name = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChange}
             />
             <Form.Field
               control={Input}
@@ -56,10 +54,7 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
               name = 'Phone_Number'
               defaultValue = {ele.Phone_Number}
               placeholder='Phone Number'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Phone_Number = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChange}
             />
             <Form.Field
               control={Input}
@@ -68,23 +63,18 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
               type="email"
               defaultValue = {ele.Email}
               placeholder='Email'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Email = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChange}
             />
           </Form.Group>
           <Form.Group widths='equal'>
             <Form.Field
               control={Input}
               label='Street Name'
+              field="Address"
               name = 'Street_Name'
               defaultValue = {ele.Address.Street_Name}
               placeholder='Street Name'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Address.Street_Name = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChangeAddress}
             />
             <Form.Field
               control={Input}
@@ -92,10 +82,7 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
               name = 'House_Number'
               defaultValue = {ele.Address.House_Number? ele.Address.House_Number: ""}
               placeholder='House Number'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Name = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChangeAddress}
             />
             <Form.Field
               control={Input}
@@ -103,10 +90,7 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
               name = 'City'
               defaultValue = {ele.Address.City}
               placeholder='City'
-              onChange = {(e: { target: { value: any; }; }) => {
-              ele.Address.City = e.target.value;
-              setf([...data]);
-            }}
+              onChange = {handleChangeAddress}
             />
             <Form.Field
                 control={Select}
@@ -115,10 +99,7 @@ const CustomerForm: React.FC<Props> = ({data, handleChange, handleSubmit, setf})
                 options={options}
                 defaultValue = {ele.Address.State}
                 placeholder='State/Province'
-                onChange ={(e: { target: { value: any; }; }) => {
-                ele.Address.State = e.target.value;
-                setf([...data]);
-            }}
+                onChange ={handleDropDown}
               />
           </Form.Group>
           <Button type="submit">Submit</Button>

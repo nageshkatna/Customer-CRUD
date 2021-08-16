@@ -1,93 +1,135 @@
 import axios from 'axios';
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-// import {
-//     Button,
-//     Form,
-//     Input,
-//     Select,
-//     Segment,
-//   } from 'semantic-ui-react';
-import Values from '../interfaces/value'
-import CustomerForm from '../components/CustomerForm'
+import Values from '../interfaces/value';
+import CustomerForm from '../components/CustomerForm';
+import ResultMessage from '../components/ResultMessage';
 
-// interface Props {
-//   id?: String
-// }
-
-// const options = [
-//   { key: 'NL', text: 'Newfoundland and Labrador	', value: 'NL' },
-//   { key: 'PE', text: 'Prince Edward Island	', value: 'PE' },
-//   { key: 'NS', text: 'Nova Scotia', value: 'NS' },
-//   { key: 'NB', text: 'New Brunswick', value: 'NB' },
-//   { key: 'QC', text: 'Quebec', value: 'QC' },
-//   { key: 'ON', text: 'Ontario', value: 'ON' },
-//   { key: 'MB', text: 'Manitoba', value: 'MB' },
-//   { key: 'SK', text: 'Saskatchewan', value: 'SK' },
-//   { key: 'AB', text: 'Alberta', value: 'AB' },
-//   { key: 'BC', text: 'British Columbia', value: 'BC' },
-//   { key: 'YT', text: 'Yukon', value: 'YT' },
-//   { key: 'NT', text: 'Northwest Territories', value: 'NT' },
-//   { key: 'NU', text: 'Nunavut', value: 'NU' }
-// ]
 
 const ClientForm: React.FC<RouteComponentProps<any>> = props => {
   
   const defaultView: Values[] = []
   const [form, setForm]: [Values[], (fetch: Values[]) => void] = useState(defaultView);
+  const [MessageShow, setMessageShow] = useState<boolean>(false)
+  const [Status, setStatus] = useState('')
+  const [message, setMessage] = useState('')
   
   useEffect(() => {
-    let url: string = 'http://localhost:5000/getbyid/'+props.match.params.id
-    axios.get<Values[]>(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(response => {
-      console.log("response.data", response.data)
-      setForm(response.data)
-      console.log("form",form)
-    })
-    .catch(error => {
-      console.log(error)
-    })
+    if (props.match.params.id) {
+      let url: string = 'http://localhost:5000/getbyid/'+props.match.params.id
+      axios.get<Values[]>(url, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+      .then(response => {
+        console.log("response.data", response.data)
+        setForm(response.data)
+        console.log("form",form)
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    } else {
+      setForm([{
+        "Id": "",
+        "Name":"",
+        "Email":"",
+        "Address" : {
+          "House_Number":NaN,
+          "Street_Name":"",
+          "City":"",
+          "State":"",
+        },
+        "Phone_Number":""
+      }])
+    }
   
   }, [props.match.params.id])
 
+  function handleDropDown(e: any, data: any){
+    const { name, value } = data;
+    console.log(name, value)
+    // console.log(e.target.name)
+    let Arr= [...form]
+    let newArr = Arr.map(item => ({
+      ...item, Address:{
+      ...item.Address, [name]: value}
+    }))
+    setForm(
+      newArr
+    );
+  }
+
+  function handleChangeAddress(e:React.ChangeEvent<HTMLInputElement>):void{
+    const { name, value } = e.target;
+    console.log(name, value)
+    // console.log(e.target.name)
+    let newArr= form.map(item => ({
+      ...item, Address:{
+      ...item.Address, [name]: value}
+    }))
+    setForm(newArr);
+  }
+
   function handleChange(e:React.ChangeEvent<HTMLInputElement>):void{
     const { name, value } = e.target;
-    // console.log(name, value)
-    let newArr= [...form]
-    newArr.map((f: any) => ({
-      ...f, [name]: value
+    console.log(name, value)
+    // console.log(e.target.name)
+    let newArr= form.map(item => ({
+      ...item, [name]: value
     }))
-
-    // let newArr= [...form]
-    // console.log(newArr[0])
-    // newArr[name] = value;
-    console.log("newArr",newArr)
-    setForm(newArr)
-    console.log("handle",form)
+    setForm(newArr);
   }
+
+  
   function handleSubmit(): void {
-    let url: string = 'http://localhost:5000/update/'+props.match.params.id
-    axios.get<Values[]>(url, {
-      headers: {
-        "Content-Type": "application/json"
-      }
+    let raw_data = form.map((elem: Values) => ({
+      'name': elem.Name,
+      'street_name' : elem.Address.Street_Name,
+      'house_number': elem.Address.House_Number,
+      'city': elem.Address.City,
+      'state': elem.Address.State,
+      'phone_number': elem.Phone_Number,
+      'email': elem.Email
+    }))
+    // console.log("raw_data")
+    var url: string=""
+    if(props.match.params.id){
+      console.log("Update")
+      url = 'http://localhost:5000/update/'+props.match.params.id
+    } else {
+      console.log("Create")
+      url= 'http://localhost:5000/create/'
+    }
+    
+    axios.put<Values[]>(url, raw_data[0])
+    .then((response) => {
+      console.log("response.data", response)
+      setMessageShow(prev => prev =true)
+      setStatus(prev => prev ='success')
+      setMessage(prev => prev ="Data is updated successfully!!")
+      // console.log("form",form)
     })
-    .then(response => {
-      console.log("response.data", response.data)
-      setForm(response.data)
-      console.log("form",form)
+    .catch((error) => {
+      console.log("EROORRRR", error.response.data.error)
+      var msg = "An error occured!! " + error.response.data.error.message
+      setMessageShow(prev => prev =true)
+      setStatus(prev => prev ='negative')
+      setMessage(prev => prev = msg)
     })
-    .catch(error => {
-      console.log(error)
-    })
+    
   }
-
+  
   return (
-    <CustomerForm data = {form} setf = {setForm} handleChange = {handleChange} handleSubmit = {handleSubmit} />
+    <div>
+      {MessageShow?
+        <ResultMessage message={message} status={Status} ></ResultMessage>
+        :
+        <CustomerForm data = {form} setf = {setForm} handleChange = {handleChange} handleSubmit = {handleSubmit} 
+        handleDropDown= {handleDropDown} handleChangeAddress= {handleChangeAddress} />
+      }
+    </div>
   )
 }
 

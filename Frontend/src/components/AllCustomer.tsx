@@ -19,10 +19,11 @@ Email: String;
 
 interface Props {
     customer: Values[];
+    handleDelete: (id:String) => void;
 }
 
 
-const ClientView: React.FC<Props & RouteComponentProps<any>> = ({customer}) => {
+const AllCustomer: React.FC<Props & RouteComponentProps<any>> = ({customer, handleDelete}) => {
     return(
       <Table celled>
         <Table.Header>
@@ -33,8 +34,8 @@ const ClientView: React.FC<Props & RouteComponentProps<any>> = ({customer}) => {
         </Table.Header>
 
         <Table.Body>
-          {customer.map((ele) =>
-            <Table.Row>
+          {customer.map((ele, index) =>
+            <Table.Row key = {index}>
               <Table.Cell>
                 <Header as='h4' image>
                   <Icon name='user outline' size='huge' />
@@ -47,6 +48,15 @@ const ClientView: React.FC<Props & RouteComponentProps<any>> = ({customer}) => {
               <Table.Cell>
                 <Segment>
                   <Grid columns={3} relaxed='very'>
+                    {/*View */}
+                  <Grid.Column>
+                      <Link to={"/clientview/" + ele.Id}>
+                        <Icon.Group  size='large'>
+                          <Icon link name='user' />
+                          <Icon corner='top left' name='list alternate' />
+                        </Icon.Group>
+                      </Link>
+                    </Grid.Column>
                     {/* Update */}
                     <Grid.Column>
                       <Link to={"/clientform/" + ele.Id}>
@@ -58,15 +68,9 @@ const ClientView: React.FC<Props & RouteComponentProps<any>> = ({customer}) => {
                     </Grid.Column>
                     {/* Delete and View */}
                     <Grid.Column>
-                      <Icon.Group  size='large'>
+                      <Icon.Group  size='large' onClick = {()=> handleDelete(ele.Id)}>
                         <Icon link name='user' />
                         <Icon corner='top left' name='close' />
-                      </Icon.Group>
-                    </Grid.Column>
-                    <Grid.Column>
-                      <Icon.Group  size='large'>
-                        <Icon link name='user' />
-                        <Icon corner='top left' name='list alternate' />
                       </Icon.Group>
                     </Grid.Column>
                   </Grid>
@@ -106,4 +110,4 @@ const ClientView: React.FC<Props & RouteComponentProps<any>> = ({customer}) => {
     
 )}
 
-export default withRouter(ClientView);
+export default withRouter(AllCustomer);

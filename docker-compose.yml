@@ -1,0 +1,22 @@
+version: "3"
+services: 
+    liferaftfrontend:
+        image: liferaftfrontend:latest
+        stdin_open: true
+        ports: 
+            - "3000:3000"
+        networks: 
+            - liferaft-app
+        volumes: 
+            - ./Frontend:/app
+    liferaftserver:
+        image: liferaftserver:latest
+        ports: 
+            - "5000:5000"
+        networks: 
+            - liferaft-app
+        volumes: 
+            - ./server:/app
+networks:
+    liferaft-app:
+        driver: bridge

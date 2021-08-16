@@ -1,0 +1,10 @@
+version: "3"
+services:
+    liferRaftServer:
+        stdin_open: true
+        tty: true 
+        build: .
+        ports:
+            - "5000:5000"
+        volumes: 
+            - ./:/app/server

@@ -1,5 +1,6 @@
 import ClientForm from "../pages/ClientForm";
 import Home from "../pages/Home";
+import ViewCustomer from "../pages/ViewCustomer";
 import IRoute from "./route";
 
 
@@ -20,6 +21,12 @@ const routes: IRoute[] = [
         path:'/clientform/:id',
         name:'Client Form',
         component: ClientForm,
+        exact: true
+    },
+    {
+        path:'/clientview/:id',
+        name:'Client Form',
+        component: ViewCustomer,
         exact: true
     },
 ]

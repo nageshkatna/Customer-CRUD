@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Segment, Header, Dimmer, Loader} from 'semantic-ui-react'
 
-import ClientView from '../components/ClientView';
+import AllCustomer from '../components/AllCustomer';
 import '../css/App.css'
 import axios from 'axios';
 import Values from '../interfaces/value';
@@ -31,7 +31,7 @@ const Home:React.FC = () =>{
   const [loading, setLoading]: [boolean, (loading: boolean) => void] = useState<boolean>(true);
   const [error, setError]: [string, (error: string) => void] = useState("");
 
-  useEffect(() => {
+  function fetchData() : void{
     axios
     .get<Values[]>("http://localhost:5000/", {
       headers: {
@@ -51,8 +51,34 @@ const Home:React.FC = () =>{
       setError(error);
       setLoading(false);
     });
+  }
+  useEffect(() => {
+    fetchData()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  function handleDelete(id:String) : void{
+    console.log(id)
+    axios
+    .delete<any>("http://localhost:5000/delete/" + id, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+    .then(response => {
+      // setCustomer(customer);
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+      }, 2000)
+      
+      fetchData()
+      // console.log(customer)
+    })
+    .catch(ex => {
+      console.log(ex)
+    });
+  }
 
   return (
     <div className="App">
@@ -64,8 +90,8 @@ const Home:React.FC = () =>{
           </Segment>
           : 
           <Segment>
-            <Header as='h1'>LifeRaft Clients</Header>
-            <ClientView customer = {customer}/>
+            <Header as='h1'>LifeRaft All Clients </Header>
+            <AllCustomer customer = {customer} handleDelete = {handleDelete}/>
           </Segment>
         }  
     </div>

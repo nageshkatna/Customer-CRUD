@@ -13,7 +13,7 @@ router.get('/',getAllCustomer);
 router.post('/create', createCustomer);
 
 //Updating customer
-router.patch('/update/:id', updateCustomer)
+router.put('/update/:id', updateCustomer)
 
 //Deleting customer
 router.delete('/delete/:id', deleteCustomer)
