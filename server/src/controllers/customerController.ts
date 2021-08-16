@@ -57,7 +57,10 @@ export const getCustomerById = async (req:Request, res:Response, next: NextFunct
 }
 
 export const getAllCustomer = async (req:Request, res:Response, next: NextFunction) => {
-    await CustomerModel.find()
+    const PAGE_SIZE = 3;
+    const page:any = req.params.page || "0";
+    const total = await CustomerModel.countDocuments({});
+    await CustomerModel.find().limit(PAGE_SIZE).skip(PAGE_SIZE * page)
     .then((customer: any) => {
         let result = customer.map((elem: UserDocument) => ({
             'Id': elem._id,
@@ -71,7 +74,7 @@ export const getAllCustomer = async (req:Request, res:Response, next: NextFuncti
             'Phone_Number': elem.phone_number,
             'Email': elem.email
         }))
-        res.status(200).json(result);
+        res.status(200).json({totalPages: Math.ceil(total/ PAGE_SIZE), result});
     })
     .catch((error: any) => {
         res.status(404).send({"error":error});

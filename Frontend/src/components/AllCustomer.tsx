@@ -19,11 +19,13 @@ Email: String;
 
 interface Props {
     customer: Values[];
+    pages: any;
     handleDelete: (id:String) => void;
+    setPageNumber: (pageNumber: Number) => void;
 }
 
 
-const AllCustomer: React.FC<Props & RouteComponentProps<any>> = ({customer, handleDelete}) => {
+const AllCustomer: React.FC<Props & RouteComponentProps<any>> = ({customer, handleDelete, pages, setPageNumber}) => {
     return(
       <Table celled>
         <Table.Header>
@@ -95,10 +97,9 @@ const AllCustomer: React.FC<Props & RouteComponentProps<any>> = ({customer, hand
                 <Menu.Item as='a' icon>
                   <Icon name='chevron left' />
                 </Menu.Item>
-                <Menu.Item as='a'>1</Menu.Item>
-                <Menu.Item as='a'>2</Menu.Item>
-                <Menu.Item as='a'>3</Menu.Item>
-                <Menu.Item as='a'>4</Menu.Item>
+                { pages.map((pageIndex:number) =>
+                  <Menu.Item as='a' key={pageIndex} onClick={() => setPageNumber(pageIndex)}>{pageIndex + 1}</Menu.Item>
+                )}
                 <Menu.Item as='a' icon>
                   <Icon name='chevron right' />
                 </Menu.Item>

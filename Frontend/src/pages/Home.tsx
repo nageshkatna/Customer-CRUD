@@ -29,18 +29,25 @@ const Home:React.FC = () =>{
   const defaultView:Values[] = [];
   const [customer, setCustomer]: [Values[], (fetch: Values[]) => void] = useState(defaultView);
   const [loading, setLoading]: [boolean, (loading: boolean) => void] = useState<boolean>(true);
-  const [error, setError]: [string, (error: string) => void] = useState("");
+  const [pageNumber, setPageNumber]:[Number, (pageNumber: Number) => void] = useState<Number>(0)
+  const [numberOfPages, setNumberOfPages]: [Number, (pages: Number) => void] = useState<Number>(0);
 
+  const pages:Number[] = new Array(numberOfPages).fill(NaN).map((v,i)=> i)
   function fetchData() : void{
+    let url = "http://localhost:5000/"+pageNumber;
     axios
-    .get<Values[]>("http://localhost:5000/", {
+    .get(url, {
       headers: {
         "Content-Type": "application/json"
       },
     })
     .then(response => {
-      setCustomer(response.data);
-      setLoading(false)
+      console.log(response.data.result)
+      let totalPages = response.data.totalPages
+      let results: Values[] = response.data.result
+      setCustomer(results);
+      setLoading(false);
+      setNumberOfPages(totalPages)
       console.log(customer)
     })
     .catch(ex => {
@@ -48,14 +55,13 @@ const Home:React.FC = () =>{
       ex.response.status === 404
         ? "Resource Not found"
         : "An unexpected error has occurred";
-      setError(error);
       setLoading(false);
     });
   }
   useEffect(() => {
     fetchData()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [pageNumber])
 
   function handleDelete(id:String) : void{
     console.log(id)
@@ -90,8 +96,8 @@ const Home:React.FC = () =>{
           </Segment>
           : 
           <Segment>
-            <Header as='h1'>LifeRaft All Clients </Header>
-            <AllCustomer customer = {customer} handleDelete = {handleDelete}/>
+            <Header as='h1'>LifeRaft All Clients Page: {+pageNumber + 1} of {numberOfPages}</Header>
+            <AllCustomer customer = {customer} handleDelete = {handleDelete} pages={pages} setPageNumber={setPageNumber}/>
           </Segment>
         }  
     </div>

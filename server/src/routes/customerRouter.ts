@@ -7,7 +7,7 @@ const router = express.Router();
 //Retrieving customer
 router.get('/getbyemail/:email', getCustomerByEmail);
 router.get('/getbyid/:id', getCustomerById);
-router.get('/',getAllCustomer);
+router.get('/:page',getAllCustomer);
 
 //Creating customer
 router.post('/create', createCustomer);

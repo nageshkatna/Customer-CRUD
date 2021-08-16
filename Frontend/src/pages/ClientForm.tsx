@@ -4,6 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import Values from '../interfaces/value';
 import CustomerForm from '../components/CustomerForm';
 import ResultMessage from '../components/ResultMessage';
+import config from '../config/config';
 
 
 const ClientForm: React.FC<RouteComponentProps<any>> = props => {
@@ -16,7 +17,7 @@ const ClientForm: React.FC<RouteComponentProps<any>> = props => {
   
   useEffect(() => {
     if (props.match.params.id) {
-      let url: string = 'http://localhost:5000/getbyid/'+props.match.params.id
+      let url: string = config.server.url+'getbyid/'+props.match.params.id
       axios.get<Values[]>(url, {
         headers: {
           "Content-Type": "application/json"
@@ -97,27 +98,41 @@ const ClientForm: React.FC<RouteComponentProps<any>> = props => {
     var url: string=""
     if(props.match.params.id){
       console.log("Update")
-      url = 'http://localhost:5000/update/'+props.match.params.id
+      url = config.server.url+'update/'+props.match.params.id
+      axios.put<Values[]>(url, raw_data[0])
+      .then((response) => {
+        console.log("response.data", response)
+        setMessageShow(prev => prev =true)
+        setStatus(prev => prev ='success')
+        setMessage(prev => prev ="Data is updated successfully!!")
+        // console.log("form",form)
+      })
+      .catch((error) => {
+        console.log("EROORRRR", error.response.data.error)
+        var msg = "An error occured!! " + error.response.data.error.message
+        setMessageShow(prev => prev =true)
+        setStatus(prev => prev ='negative')
+        setMessage(prev => prev = msg)
+      })
     } else {
       console.log("Create")
-      url= 'http://localhost:5000/create/'
+      url= config.server.url+'create/'
+      axios.post<Values[]>(url, raw_data[0])
+      .then((response) => {
+        console.log("response.data", response)
+        setMessageShow(prev => prev =true)
+        setStatus(prev => prev ='success')
+        setMessage(prev => prev ="Data is updated successfully!!")
+        // console.log("form",form)
+      })
+      .catch((error) => {
+        console.log("EROORRRR", error.response.data.error)
+        var msg = "An error occured!! " + error.response.data.error.message
+        setMessageShow(prev => prev =true)
+        setStatus(prev => prev ='negative')
+        setMessage(prev => prev = msg)
+      })
     }
-    
-    axios.put<Values[]>(url, raw_data[0])
-    .then((response) => {
-      console.log("response.data", response)
-      setMessageShow(prev => prev =true)
-      setStatus(prev => prev ='success')
-      setMessage(prev => prev ="Data is updated successfully!!")
-      // console.log("form",form)
-    })
-    .catch((error) => {
-      console.log("EROORRRR", error.response.data.error)
-      var msg = "An error occured!! " + error.response.data.error.message
-      setMessageShow(prev => prev =true)
-      setStatus(prev => prev ='negative')
-      setMessage(prev => prev = msg)
-    })
     
   }
   
