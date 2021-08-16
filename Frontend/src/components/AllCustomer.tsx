@@ -94,15 +94,9 @@ const AllCustomer: React.FC<Props & RouteComponentProps<any>> = ({customer, hand
                     </Icon.Group>
                   </Link>
                 </Menu.Item>
-                <Menu.Item as='a' icon>
-                  <Icon name='chevron left' />
-                </Menu.Item>
                 { pages.map((pageIndex:number) =>
                   <Menu.Item as='a' key={pageIndex} onClick={() => setPageNumber(pageIndex)}>{pageIndex + 1}</Menu.Item>
                 )}
-                <Menu.Item as='a' icon>
-                  <Icon name='chevron right' />
-                </Menu.Item>
               </Menu>
             </Table.HeaderCell>
           </Table.Row>

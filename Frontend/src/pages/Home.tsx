@@ -5,6 +5,7 @@ import AllCustomer from '../components/AllCustomer';
 import '../css/App.css'
 import axios from 'axios';
 import Values from '../interfaces/value';
+import config from '../config/config';
 
 // const onSubmit = () =>{
 //   console.log("Submit clicked!")
@@ -34,7 +35,7 @@ const Home:React.FC = () =>{
 
   const pages:Number[] = new Array(numberOfPages).fill(NaN).map((v,i)=> i)
   function fetchData() : void{
-    let url = "http://localhost:5000/"+pageNumber;
+    let url = config.server.url+pageNumber;
     axios
     .get(url, {
       headers: {
@@ -66,7 +67,7 @@ const Home:React.FC = () =>{
   function handleDelete(id:String) : void{
     console.log(id)
     axios
-    .delete<any>("http://localhost:5000/delete/" + id, {
+    .delete<any>(config.server.url+"delete/" + id, {
       headers: {
         "Content-Type": "application/json"
       },
@@ -96,7 +97,8 @@ const Home:React.FC = () =>{
           </Segment>
           : 
           <Segment>
-            <Header as='h1'>LifeRaft All Clients Page: {+pageNumber + 1} of {numberOfPages}</Header>
+            <Header as='h1'>LifeRaft All Clients.</Header>
+            <Header as='h3'>Page: {+pageNumber + 1} of {numberOfPages}</Header>
             <AllCustomer customer = {customer} handleDelete = {handleDelete} pages={pages} setPageNumber={setPageNumber}/>
           </Segment>
         }  
